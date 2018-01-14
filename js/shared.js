@@ -79,3 +79,213 @@ $(".top").click(function () {
 function ReloadPage() {
     window.location.reload();
 }
+//分页
+pageFenye({
+	id: "#brokerPage",
+	item: ".describe .broker-list",
+	showType: "block"
+});
+pageFenye({
+	id: "#tablePage",
+	item: "#table-cont tr",
+	showType: "table-row"
+});
+
+/*---------------------------轮播图 -----------------------------------*/
+var galleryTop = new Swiper('.gallery-top', {
+	spaceBetween: 10,
+	loop: true,
+	loopedSlides: 5, //looped slides should be the same
+});
+var galleryThumbs = new Swiper('.gallery-thumbs', {
+	spaceBetween: 10,
+	slidesPerView: 5,
+	touchRatio: 0.2,
+	loop: true,
+	loopedSlides: 5, //looped slides should be the same
+	slideToClickedSlide: true,
+	navigation: {
+		nextEl: '.swiper-button-next',
+		prevEl: '.swiper-button-prev',
+	},
+});
+galleryTop.controller.control = galleryThumbs;
+galleryThumbs.controller.control = galleryTop;
+/*大图模式*/
+var big_img = new Swiper('.big-img', {
+	spaceBetween: 10,
+	loopedSlides: 5,
+	loop: true,
+	navigation: {
+		nextEl: '.swiper-button-next',
+		prevEl: '.swiper-button-prev',
+	},
+});
+$(".gallery-top").on("click", ".swiper-slide", function() {
+	var index = $(this).index();
+	big_img.slideTo(index, 1000, false); //切换到第一个slide，速度为1秒
+	window.top.layer.open({
+		type: 1,
+		title: false,
+		shade: 0.4,
+		skin: 'bg-img-class',
+		shadeClose: true,
+		closeBtn: 1,
+		content: $(".big-img"),
+		area: ["80%", "80%"],
+	});
+});
+setTimeout(function(){
+	$(".big-img").hide()
+},0)
+/*---------------------------判断经纪人位置-----------------------------------*/
+
+var el = document.querySelector('.broker'), //经纪人
+	fix_nav = document.querySelector('.fix-nav'), //导航栏
+	zhoubian = document.querySelector('a[name=zhoubian]'), //周边
+	elTop = el.offsetTop,
+	fix_nav_top = fix_nav.offsetTop,
+	zhoubian_top = zhoubian.offsetTop;
+
+var nav_tab = document.querySelectorAll('.fix-nav a');
+var nav_div = document.querySelectorAll('.maodian');
+var a = nav_div.offsetHeight;
+window.onscroll = function() {
+	var sTop = document.body.scrollTop || document.documentElement.scrollTop;
+	if(sTop > elTop) {
+		el.style.position = 'fixed';
+		el.style.top = '50px';
+		//		el.style.right = '50px';
+		el.style.background = '#fff';
+		el.style.zIndex = '7';
+		fix_nav.style.display = 'block'
+	} else {
+		el.style.position = 'relative';
+		el.style.top = 'auto';
+		el.style.right = 'auto';
+	}
+
+	if(sTop > zhoubian_top - 100) {
+		el.style.display = 'none'
+	} else {
+		el.style.display = 'block'
+	}
+
+	if(sTop < 600) {
+		fix_nav.style.display = 'none'
+	}
+
+	/*导航跟动内容*/
+	for(var i = 0; i < nav_div.length; i++) {
+		if(sTop + 50 >= nav_div[i].offsetTop) {
+			for(var j = 0; j < nav_div.length; j++) {
+				nav_tab[j].className = "";
+			}
+			nav_tab[i].className = "navLiActive";
+		}
+	}
+}
+/*---------------------------地图需要小区的名称 -----------------------------------*/
+//var communityName = "牡丹江新星花园";
+/*---------------------------地图需要小区的名称 -----------------------------------*/
+/*初始化地图*/
+var map = new AMap.Map("djq-baidu-api", {
+    resizeEnable: true,
+    scrollWheel: false,
+    zoom: 10
+});
+AMap.plugin(['AMap.ToolBar', 'AMap.Scale'],
+    function () {
+        map.addControl(new AMap.ToolBar());
+
+        map.addControl(new AMap.Scale());
+
+    });
+var placeSearch, geocoder, lngAndLat = [], //周边搜索，经纬度获取，经纬度存值
+	classNum = 0, // icon  样式
+	lnglat; //计算距离
+//地点查询参数
+var option = {
+	city: "全国", //城市
+	type: "地铁|公交",
+	map: map,
+	//panel: "panel"
+};
+AMap.service(["AMap.PlaceSearch"], function() {
+	//构造地点查询类
+	placeSearch = new AMap.PlaceSearch(option);
+});
+AMap.service('AMap.Geocoder', function() { //回调函数
+	//实例化Geocoder
+	geocoder = new AMap.Geocoder({
+		city: "全国" //
+	});
+
+})
+
+$(".itemBtn li").click(function() {
+	classNum = $(this).index();
+	$("#serachName").text($(this).find('a').text())
+	/*设置搜索关键字*/
+	placeSearch.setType($(this).attr('data-type'));
+	//获取当前房子位置经纬度
+	getNL();
+	$(this).addClass('active').siblings().removeClass('active')
+
+});
+/*默认执行一次搜索交通*/
+
+setTimeout(function() {
+	getNL()
+}, 200);
+
+/*根据关键字获取经纬度*/
+var getNL = function() {
+	//geocoder.getLocation(communityName, function(status, result) {
+	//	if(status === 'complete' && result.info === 'OK') {
+	//		var data = result.geocodes[0];
+	//		lngAndLat.push(data.location.lng)
+	//		lngAndLat.push(data.location.lat)
+	//		//
+	//		lnglat = new AMap.LngLat(data.location.lng, data.location.lat)
+	//		load()
+	//		//比如在获得的经纬度上打上一个Marker
+	//	} else {
+	//		console.log('获取经纬度失败')
+	//		//获取经纬度失败
+	//	}
+	//});
+
+	var $CoordinatesX = $("#CoordinatesX").val();
+	var $CoordinatesY = $("#CoordinatesY").val();
+	lngAndLat.push($CoordinatesX)
+	lngAndLat.push($CoordinatesY)
+	lnglat = new AMap.LngLat($CoordinatesX, $CoordinatesY)
+	load()
+}
+//周边查询
+var load = function() {
+	placeSearch.searchNearBy("", lngAndLat, 2000, function(status, result) {
+		if(status === 'complete' && result.info === 'OK') {
+			var arr = result.poiList.pois;
+			var str = '';
+			var classArr = ['icon-jt', 'icon-gouwu1', 'icon-school', 'icon-yinhang', 'icon-add', 'icon-canting', 'icon-xiuxian1']
+			for(var i = 0; i < arr.length; i++) {
+				str += '<li>' +
+					'<div class="address clearfix">' +
+					'<div class="address-name">' +
+					'<i class="icon iconfont ' + classArr[classNum] + '"></i>' +
+					'<span>' + arr[i].name + '</span>' +
+					'</div>' +
+					'<div class="address-juli">' +
+					'<i class="icon iconfont icon-juli"></i>' +
+					'<span>' + lnglat.distance([arr[i].location.lng, arr[i].location.lat]).toFixed(0) + '米</span>' +
+					'</div>' +
+					'</div>' +
+					'<div class="address-car">' + arr[i].address + '</div>' +
+					'</li>'
+			}
+			$(".results-box").html(str)
+		}
+	});
+};
