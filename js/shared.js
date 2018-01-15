@@ -191,7 +191,7 @@ window.onscroll = function() {
 /*初始化地图*/
 var map = new AMap.Map("djq-baidu-api", {
     resizeEnable: true,
-    scrollWheel: false,
+    scrollWheel: false,//禁止鼠标滚动
     zoom: 10
 });
 AMap.plugin(['AMap.ToolBar', 'AMap.Scale'],
