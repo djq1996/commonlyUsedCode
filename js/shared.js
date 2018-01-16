@@ -289,3 +289,17 @@ var load = function() {
 		}
 	});
 };
+$(document).on('click', function(e) {  
+	var e = e || window.event; //浏览器兼容性   
+	var elem = e.target || e.srcElement;
+	if(elem.className.indexOf('think') > 0){
+		return
+	}
+	while (elem) { //循环判断至跟节点，防止点击的是div子元素   
+	    if (elem.className && elem.className.indexOf('message')>0) {
+		return;  
+	    }  
+	    elem = elem.parentNode;  
+	}
+	$('.message').css('display', 'none'); //点击的不是div或其子元素   
+});
