@@ -303,3 +303,10 @@ $(document).on('click', function(e) {
 	}
 	$('.message').css('display', 'none'); //点击的不是div或其子元素   
 });
+//检测终端
+var u = navigator.userAgent;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+        //console.log('是否是Android：' + isAndroid);
+        //console.log('是否是iOS：' + isiOS);
