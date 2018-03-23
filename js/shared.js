@@ -310,3 +310,23 @@ var u = navigator.userAgent;
 
         //console.log('是否是Android：' + isAndroid);
         //console.log('是否是iOS：' + isiOS);
+
+## 获取URI参数 例子 
+```javascript
+//获取机型
+    function getQueryString(a) {
+      var reg = new RegExp('(^|&)' + a + '=([^&]*)(&|$)', 'i');
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null) {
+        return unescape(r[2]);
+      }
+      return null;
+    }
+    //这样调用：
+    if(getQueryString("devicemodel") == 'iPhone10,6'){
+      console.log('检测到了苹果x')
+    }else{
+      console.log('苹果其他机型')
+    }
+
+```
