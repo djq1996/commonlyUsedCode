@@ -6,7 +6,7 @@ window.onload = function() {
     }
 
     // 2、防抖功能函数，接受传参
-    function debounce(fn) {
+    function debounce(fn, wait = 1000) {
       // 4、创建一个标记用来存放定时器的返回值
       let timeout = null;
       return function() {
@@ -17,7 +17,7 @@ window.onload = function() {
         // 如果用户还点击了的话，就不会执行 fn 函数
         timeout = setTimeout(() => {
           fn.call(this, arguments);
-        }, 1000);
+        }, wait);
       };
     }
 
